@@ -287,8 +287,13 @@ task deployDHE {
 
         println "Publishing build: ${version}"
 
+        println "Publishing userAtHost: ${userAtHost}"
+        println "Publishing dir: ${dir}"
+        println "Publishing destDHEStaging: ${destDHEStaging}/${buildType}/"
+
         ant.taskdef(name: 'scp', classname: 'org.apache.tools.ant.taskdefs.optional.ssh.Scp',
             classpath: configurations.antScp.asPath)
+
 
         ant.scp(todir: "${destDHEStaging}/${buildType}/",
                 password: "${pw}",
