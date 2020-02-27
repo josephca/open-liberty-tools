@@ -289,27 +289,25 @@ task deployDHE {
         
         if (buildType == "release") {
             createJSONForBuild("${version}")
-
-            def toPublish_buildlog = ant.path {
-                fileset(dir: '.', includes: "${buildLog}")
-            }
-            
-            println "Publishing " + toPublish_buildlog + " to DHE"
-            copy {
-                from toPublish_buildlog
-                into toPublishDir
-            }
         }
 
-        def userAtHost = user + "@" + host
+        def toPublish_buildlog = ant.path {
+            fileset(dir: '.', includes: "${buildLog}")
+        }
+        
+        println "Publishing " + toPublish_buildlog + " to DHE"
+        copy {
+            from toPublish_buildlog
+            into toPublishDir
+        }
+    
         def dir = "/www/stage/export/pub/software/openliberty/tools"
-        def destDHEStaging = userAtHost + ':' + dir
-
+        
         println "Publishing build: ${version}"
 
         ssh.run {
             session(remotes.dhe) {
-                put from: "${rootDir}/${version}", into: "${dir}/${buildType}/"
+                put from: "${toPublishDir}", into: "${dir}/${buildType}/"
             }
         }
 
@@ -323,7 +321,7 @@ task deployDHE {
             ant.touch(file: "${rootDir}/${infoJson}")
 
             // Download ${infoJson} from destDHEStaging and use it if it's not emptied.
-            println "Downloading ${destDHEStaging}/${buildType}/${infoJson}..."
+            println "Downloading ${dir}/${buildType}/${infoJson}..."
 
             ssh.run {
                 session(remotes.dhe) {
